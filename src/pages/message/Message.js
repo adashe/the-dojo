@@ -3,8 +3,9 @@ import { useParams } from 'react-router-dom'
 import { useCollection } from '../../hooks/useCollection'
 import { useDocument } from '../../hooks/useDocument'
 
-// styles
-import './Chat.css'
+// styles and components
+import './Message.css'
+import MessageList from './MessageList'
 
 export default function Chat() {
   const { messagesError, documents: messages } = useCollection('messages')
@@ -32,28 +33,12 @@ export default function Chat() {
     return <div className="loading">Loading...</div>
   }
 
-  console.log(messages)
 
   return (
     <div>
-      <h2 className="page-title">Chat with {recipient.displayName}</h2>
+      <h2 className="page-title">Message with {recipient.displayName}</h2>
 
-      <div className="message-list">
-        <ul>
-          {!messages && <p>No messages yet!</p>}
-          {messages && messages.map(message => (
-            <li key={message.id}>
-              <div className="message-author">
-                <p>from {message.fromUserDisplayName} to {message.toUserDisplayName}</p>
-              </div>
-              <div className="message-content">
-                <p>{message.content}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-
+      <MessageList messages={messages}/>
 
       <form className="send-message" onSubmit={handleSubmit}>
         <label>

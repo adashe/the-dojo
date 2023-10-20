@@ -15,7 +15,7 @@ export default function OnlineUsers() {
       <h2>All Users</h2>
       {error && <div className="error">{error}</div>}
       {documents && documents.map(user => (
-        <Link to={`/chat/${user.id}`}  key={user.id} className="user-list-item">
+        <Link to={`/message/${user.id}`}  key={user.id} className="user-list-item">
           {user.online && <span className="online-user"></span>}
           <span>{user.displayName}</span>
           <Avatar src={user.photoURL} />
