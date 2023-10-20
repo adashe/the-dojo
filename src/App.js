@@ -13,6 +13,7 @@ import Project from './pages/project/Project'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import OnlineUsers from './components/OnlineUsers';
+import Chat from './pages/chat/Chat';
 
 function App() {
   const { authIsReady, user } = useAuthContext()
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />
                 <Route path="/create" element={user ? <Create /> : <Navigate to="/login" />} />
                 <Route path="/projects/:id" element={user ? <Project /> : <Navigate to="/login" />} />
+                <Route path="/chat/:id" element={user ? <Chat /> : <Navigate to="/" />} />
                 <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
                 <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" />} />
             </Routes>
