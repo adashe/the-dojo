@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { timestamp } from "../../firebase/config"
+import { useAuthContext } from "../../hooks/useAuthContext"
+import { useFirestore } from "../../hooks/useFirestore"
 import { useParams } from 'react-router-dom'
 import { useCollection } from '../../hooks/useCollection'
 import { useDocument } from '../../hooks/useDocument'
@@ -7,16 +10,42 @@ import { useDocument } from '../../hooks/useDocument'
 import './Message.css'
 import MessageList from './MessageList'
 
-export default function Chat() {
+export default function Message() {
   const { messagesError, documents: messages } = useCollection('messages')
+  const { addDocument, response } = useFirestore('messages')
   const { id: recipientId } = useParams()
   const { recipientError, document: recipient } = useDocument('users', recipientId)
   const [newMessage, setNewMessage] = useState('')
+  const { user } = useAuthContext()
 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log(newMessage)
+
+    const newAuthor = {
+      displayName: user.displayName,
+      id: user.uid,
+      photoURL: user.photoURL,
+    }
+
+    const newRecipient = {
+      displayName: recipient.displayName,
+      id: recipient.id,
+      photoURL: recipient.photoURL,
+    }
+
+    const messageToAdd = {
+      author: newAuthor,
+      recipient: newRecipient,
+      content: newMessage,
+      createdAt: timestamp.fromDate(new Date())
+    }
+
+    console.log(messageToAdd)
+
+    await addDocument(messageToAdd)
+    if (!response.error) {
+      setNewMessage('')
+    }
   }
 
   if (recipientError) {
@@ -29,8 +58,8 @@ export default function Chat() {
   if (messagesError) {
     return <div className="error">{messagesError}</div>
   }
-  if (!recipient) {
-    return <div className="loading">Loading...</div>
+  if (!messages) {
+    return <div className="loading">Loading messages...</div>
   }
 
 
@@ -43,11 +72,11 @@ export default function Chat() {
       <form className="send-message" onSubmit={handleSubmit}>
         <label>
           <span>Send a message:</span>
-          <textarea
+          <input
             required
             onChange={(e) => setNewMessage(e.target.value)}
             value={newMessage}
-          ></textarea>
+          />
         </label>
         <button className="btn">Send Message</button>
       </form>

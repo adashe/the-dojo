@@ -1,4 +1,5 @@
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import Avatar from "../../components/Avatar"
 
 // styles
 import './Message.css'
@@ -12,7 +13,8 @@ export default function MessageList({ messages }) {
         {messages && messages.map(message => (
           <li key={message.id}>
             <div className="message-author">
-              <p>from {message.fromUserDisplayName} to {message.toUserDisplayName}</p>
+              <Avatar src={message.author.photoURL}/>
+              <p>{message.author.displayName}</p>
             </div>
             <div className="message-date">
               <p>{formatDistanceToNow(message.createdAt.toDate(), { addSuffix: true })}</p>
