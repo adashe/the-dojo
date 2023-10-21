@@ -18,6 +18,34 @@ export default function Message() {
   const [newMessage, setNewMessage] = useState('')
   const { user } = useAuthContext()
 
+  if (recipientError) {
+    return <div className="error">{recipientError}</div>
+  }
+  if (!recipient) {
+    return <div className="loading">Loading...</div>
+  }
+
+  if (messagesError) {
+    return <div className="error">{messagesError}</div>
+  }
+  if (!messages) {
+    return <div className="loading">Loading messages...</div>
+  }
+
+  const filteredMessages = messages ? messages.filter((message) => {
+    if (message.author.id === user.uid && message.recipient.id === recipient.id) {
+      return true
+    }
+    else if (message.author.id === recipient.id && message.recipient.id === user.uid) {
+      return true
+    } else {
+      return false
+    }}) : null
+
+  const orderedMessages = filteredMessages.sort((messageA, messageB) => {
+    return messageA.createdAt - messageB.createdAt
+  })
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -48,26 +76,11 @@ export default function Message() {
     }
   }
 
-  if (recipientError) {
-    return <div className="error">{recipientError}</div>
-  }
-  if (!recipient) {
-    return <div className="loading">Loading...</div>
-  }
-
-  if (messagesError) {
-    return <div className="error">{messagesError}</div>
-  }
-  if (!messages) {
-    return <div className="loading">Loading messages...</div>
-  }
-
-
   return (
     <div>
       <h2 className="page-title">Message with {recipient.displayName}</h2>
 
-      <MessageList messages={messages}/>
+      <MessageList messages={orderedMessages}/>
 
       <form className="send-message" onSubmit={handleSubmit}>
         <label>
